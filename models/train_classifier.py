@@ -15,7 +15,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.ensemble import RandomForestClassifier
 
 def load_data(database_filepath):
-    # load cleaned data from database
+    '''This function loads cleaned data from database'''
+    
     engine = create_engine('sqlite:///{}'.format(database_filepath))
     df = pd.read_sql_table('MessageCategory', engine)
     X = df.message.values
@@ -26,6 +27,11 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    '''
+    This function preprocess messages by
+    tokenizing, normalizing, and lemmatizing text.
+    
+    '''
     # tokenize text 
     tokenized = word_tokenize(text)
     # initiate Lemmatizer
@@ -35,6 +41,11 @@ def tokenize(text):
 
 
 def build_model():
+    '''
+    This function instantiates Pipeline and GridSearch objects,
+    and returns a GridSearchCV object as cv
+    
+    '''
     pipeline = Pipeline([('text_pipeline',
                      Pipeline([('vect', CountVectorizer(tokenizer=tokenize)),
                               ('tfidf', TfidfTransformer())])),
@@ -51,6 +62,10 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    This function reports f1 score, precision, and recall for each output
+    category of the dataset.
+    '''
     Y_pred = model.predict(X_test)    
     for index, output in enumerate(category_names):
         cr = classification_report(Y_test[:,index], Y_pred[:,index])
@@ -59,6 +74,9 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    '''
+    This function saves machine learning model into a pickle file.
+    '''
     with open(model_filepath, 'wb') as file:
               pickle.dump(model, file)
 
