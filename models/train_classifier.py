@@ -52,13 +52,23 @@ def build_model():
                          ('clf', MultiOutputClassifier(RandomForestClassifier()))])
 
     parameters = {
-        'text_pipeline__vect__ngram_range': ((1, 1), (1, 2)),
-        'text_pipeline__vect__max_df': (0.5, 0.75, 1.0)
-    }
+        'text_pipeline__vect__ngram_range': ((1, 1), (1, 2))}
+    # 'text_pipeline__vect__max_df': (0.5, 0.75, 1.0)
 
     cv = GridSearchCV(pipeline, param_grid=parameters)
 
     return cv
+
+
+def train_model(model, X, Y):
+    '''This function split train/test data, train model, and return a trained model'''
+
+    X_train, X_test, Y_train, Y_test = train_test_split(
+        X, Y, test_size=0.2)
+
+    model.fit(X_train, Y_train)
+
+    return model, X_test, Y_test
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
@@ -86,14 +96,12 @@ def main():
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
-        X_train, X_test, Y_train, Y_test = train_test_split(
-            X, Y, test_size=0.2)
 
         print('Building model...')
         model = build_model()
 
         print('Training model...')
-        model.fit(X_train, Y_train)
+        model, X_test, Y_test = train_model(model, X, Y)
 
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)

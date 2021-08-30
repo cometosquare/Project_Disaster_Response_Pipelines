@@ -44,6 +44,10 @@ def index():
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+    response_all_percentage = df.describe().iloc[1, 1:]
+    response_names = list(response_all_percentage.index)
+    response_direct_percentage = df[df['genre']
+                                    == 'direct'].describe().iloc[1, 1:]
 
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
@@ -63,6 +67,42 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=response_names,
+                    y=response_all_percentage
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Response Categories for all message genre',
+                'yaxis': {
+                    'title': "percentage"
+                },
+                'xaxis': {
+                    'title': "Category"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=response_names,
+                    y=response_direct_percentage
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Response Categories for genre direct',
+                'yaxis': {
+                    'title': "percentage"
+                },
+                'xaxis': {
+                    'title': "Category"
                 }
             }
         }
